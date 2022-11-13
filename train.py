@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 # Additional Scripts
 from utils import transforms as T
 from utils.dataset import DentalDataset
+from utils.IDRID_dataset import IDRIDDataset
 from utils.utils import EpochCallback
 
 from config import cfg
@@ -14,14 +15,32 @@ from train_transunet import TransUNetSeg
 
 
 class TrainTestPipe:
-    def __init__(self, train_path, test_path, model_path, device):
+    def __init__(self, train_path, test_path, model_path, lesion_type, device):
         self.device = device
         self.model_path = model_path
+        self.lesion_type = lesion_type
 
-        self.train_loader = self.__load_dataset(train_path, train=True)
-        self.test_loader = self.__load_dataset(test_path)
+        # self.train_loader = self.__load_dataset(train_path, train=True)
+        # self.test_loader = self.__load_dataset(test_path)
+        self.train_loader = self.__load_drdataset(train_path, train=True, lesion_type=self.lesion_type)
+        self.test_loader = self.__load_drdataset(test_path, train=False, lesion_type=self.lesion_type)
 
         self.transunet = TransUNetSeg(self.device)
+
+
+
+    def __load_drdataset(self, path, train=False, lesion_type='EX'):
+        shuffle = False
+        transform = False
+
+        if train:
+            shuffle = True
+            transform = transforms.Compose([T.RandomAugmentation(2)])
+
+        set = IDRIDDataset(path, transform, lesion_type, train=train)
+        loader = DataLoader(set, batch_size=cfg.batch_size, shuffle=shuffle)
+
+        return loader
 
     def __load_dataset(self, path, train=False):
         shuffle = False
@@ -45,6 +64,7 @@ class TrainTestPipe:
             mask = mask.to(self.device)
 
             loss, cls_pred = step_func(img=img, mask=mask)
+
 
             total_loss += loss
 
