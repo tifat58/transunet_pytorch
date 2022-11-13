@@ -1,8 +1,7 @@
-# Panoramic Dental X-Ray Image Semantic Segmentation with TransUnet
+# Diabetic Retinpathy (DR) Image Semantic Segmentation with TransUnet
 The unofficial implementation of [TransUNet: Transformers Make Strong Encoders for Medical Image Segmentation](https://arxiv.org/abs/2102.04306) on Pytorch
 
-![Output](./assets/outs.png "Output")
-*Output of my implementation. (A) Original X-Ray Image; (B) Merged Image of the Predicted Segmentation Map and Original X-Ray; (C) Ground Truth; (D) Predicted Segmentation Map*
+
 
 ## TransUNet
 - On various medical image segmentation tasks, the ushaped architecture, also known as U-Net, has become the de-facto standard and achieved tremendous success. However, due to the intrinsic
@@ -19,12 +18,30 @@ locality of convolution operations, U-Net generally demonstrates limitations in 
 - `pip install -r requirements.txt`
 
 ## Dataset
+- IDRID/FGADR - Structure
+```bash
+.
+── data
+    └──IDRID/..
+        ├── train/test
+           ├── images
+                └── imgs1.jpg
+                └── imgs2.jpg
+           └── masks
+                └── MA
+                    └── imgs1_MA.tif
+                    └── imgs2_MA.tif
+                └── HE
+                └── EX
+                └── SE
+        
+```
+
 - UFBA_UESC_DENTAL_IMAGES[2] dataset was used for training.
-- Dataset can be accessed by request[3].
 
 ## Training
 - Training process can be started with following command.
-    - `python main.py --mode train --model_path ./path/to/model --train_path ./path/to/trainset --test_path ./path/to/testset `
+    - `python main.py --mode train --model_path ./path/to/model --train_path ./path/to/trainset --test_path ./path/to/testset --lesion_type MA`
 
 ## Inference
 - After model is trained, inference can be run with following command.
